@@ -1,0 +1,39 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage
+    x:Class="Tasker.Views.Login"
+    xmlns="http://xamarin.com/schemas/2014/forms"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:prism="clr-namespace:Prism.Mvvm;assembly=Prism.Forms"
+    prism:ViewModelLocator.AutowireViewModel="True"
+    BackgroundColor="#afceff">
+
+    <StackLayout
+        Padding="20"
+        HorizontalOptions="FillAndExpand"
+        Orientation="Vertical"
+        VerticalOptions="CenterAndExpand">
+        <Image
+            HorizontalOptions="Center"
+            Source="xam.png"
+            VerticalOptions="Center" />
+        <Label Text="Телефон" />
+        <Entry
+            BackgroundColor="#afceff"
+            HorizontalOptions="FillAndExpand"
+            Text="{Binding Phone}" />
+        <Label Text="Пароль" />
+        <Entry
+            BackgroundColor="#afceff"
+            HorizontalOptions="FillAndExpand"
+            Text="{Binding Password}" />
+        <Button
+            BackgroundColor="#4286f4"
+            Command="{Binding NextCommand}"
+            Text="Продолжить" />
+        <Button
+            BackgroundColor="#4286f4"
+            Command="{Binding RegistrationCommand}"
+            Text="Регистрация" />
+    </StackLayout>
+
+</ContentPage>

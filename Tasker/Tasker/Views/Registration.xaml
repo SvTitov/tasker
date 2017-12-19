@@ -1,0 +1,22 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage
+    x:Class="Tasker.Views.Registration"
+    xmlns="http://xamarin.com/schemas/2014/forms"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:prism="clr-namespace:Prism.Mvvm;assembly=Prism.Forms"
+    Title="{Binding Title}"
+    prism:ViewModelLocator.AutowireViewModel="True">
+    <StackLayout
+        Padding="20"
+        HorizontalOptions="FillAndExpand"
+        Orientation="Vertical"
+        VerticalOptions="CenterAndExpand">
+        <Label Text="Телефон" />
+        <Entry Text="{Binding Phone}" />
+        <StackLayout IsVisible="{Binding IsSend}" Orientation="Vertical">
+            <Label Text="Код из СМС" />
+            <Entry Text="{Binding Code}" />
+        </StackLayout>
+        <Button Command="{Binding ActionCommand}" Text="{Binding ActionText}" />
+    </StackLayout>
+</ContentPage>
