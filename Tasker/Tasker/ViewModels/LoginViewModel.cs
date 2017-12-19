@@ -4,6 +4,9 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Prism.Navigation;
+using DryIoc;
+using Tasker.Repositories;
+using Prism.Services;
 
 namespace Tasker.ViewModels
 {
@@ -12,10 +15,14 @@ namespace Tasker.ViewModels
 	    private string _phone;
 	    private string _password;
         private readonly INavigationService _navigationService;
+        private readonly IContainer _container;
+        readonly IPageDialogService _dialogService;
 
-        public LoginViewModel(INavigationService navigationService)
+        public LoginViewModel(IContainer container ,INavigationService navigationService, IPageDialogService dialogService)
             :base(navigationService)
         {
+            this._dialogService = dialogService;
+            this._container = container;
             NextCommand = new DelegateCommand(OnNext);
             RegistrationCommand = new DelegateCommand(OnRegistration);
             this._navigationService = navigationService;
@@ -28,7 +35,22 @@ namespace Tasker.ViewModels
 
 	    private async void OnNext()
 	    {
-	        await _navigationService.NavigateAsync("app:///NavigationPage/MainPage");
+            var login = _container.Resolve<ILoginRepository>();
+
+            if (string.IsNullOrWhiteSpace(Phone))
+                return;
+            
+            var result = await login.Login(new Models.Output.LoginOutput { Phone = Phone });
+
+            if (result != null)
+            {
+                Settings.CurrentToken = result.Token;
+                await _navigationService.NavigateAsync("app:///NavigationPage/MainPage");
+            }
+            else
+            {
+                await _dialogService.DisplayAlertAsync("Ошибка", "Не удалось зайти :(", "Ok", "Отмена");
+            }
         }
 
 	    public string Phone

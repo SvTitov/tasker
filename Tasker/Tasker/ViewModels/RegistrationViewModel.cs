@@ -4,6 +4,10 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Prism.Navigation;
+using DryIoc;
+using Tasker.Repositories;
+using System.Net.Http;
+using Prism.Services;
 
 namespace Tasker.ViewModels
 {
@@ -14,20 +18,43 @@ namespace Tasker.ViewModels
 	    private string _code;
 	    private bool _isSend = false;
 	    private string _actionText = "Отправить";
+        readonly IContainer _container;
+        readonly IPageDialogService _dialogService;
 
-
-	    public RegistrationViewModel(INavigationService navigationService)
+        public RegistrationViewModel(IContainer container, INavigationService navigationService, IPageDialogService dialogService)
             : base(navigationService)
 	    {
-	        _navigationService = navigationService;
+            this._dialogService = dialogService;
+            this._container = container;
+            _navigationService = navigationService;
             ActionCommand = new DelegateCommand(DoAction);
+            Title = "Регистрация";
 	    }
 
-	    private void DoAction()
+	    private async void DoAction()
 	    {
-	        IsSend = true;
-	        ActionText = "Подтвердить";
-	    }
+            var repostiroty = _container.Resolve<IRegistrationRepository>();
+
+            if (!IsSend)
+            {
+                var result = await repostiroty.Registration(Phone);
+
+                if (!result.IsSuccessStatusCode)
+                {
+                    await _dialogService.DisplayAlertAsync("Ошибка", "Указанный номер уже используется", "Ok", "Отмена");
+                }
+                else
+                {
+                    IsSend = true;
+                    ActionText = "Подтвердить";
+                }
+            }
+            else
+            {
+                var result = repostiroty.Confirm(Phone, Code);
+                await _navigationService.GoBackAsync();
+            }
+        }
 
 	    public string Phone
 	    {

@@ -4,6 +4,7 @@ using DryIoc;
 using Prism.DryIoc;
 using Xamarin.Forms;
 using Xamarin.Forms.Xaml;
+using Tasker.Repositories;
 
 [assembly: XamlCompilation(XamlCompilationOptions.Compile)]
 namespace Tasker
@@ -23,7 +24,7 @@ namespace Tasker
         {
             InitializeComponent();
 
-            await NavigationService.NavigateAsync("NavigationPage/Login");
+            await NavigationService.NavigateAsync("NavigationPage/EditTask?id=2&edit=true");
         }
 
         protected override void RegisterTypes()
@@ -32,6 +33,10 @@ namespace Tasker
             Container.RegisterTypeForNavigation<MainPage>();
             Container.RegisterTypeForNavigation<Login>();
             Container.RegisterTypeForNavigation<Registration>();
+            Container.RegisterTypeForNavigation<EditTask>();
+            Container.Register<IRestRepository, RestRepository>();
+            Container.Register<ILoginRepository, LoginRepository>();
+            Container.Register<IRegistrationRepository, RegistrationRepository>();
         }
     }
 }
