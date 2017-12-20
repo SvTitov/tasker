@@ -11,6 +11,7 @@ from flask import jsonify
 from bson.objectid import ObjectId
 from functools import wraps
 import uuid
+from bson import json_util
 
 
 app = Flask(__name__)
@@ -19,6 +20,10 @@ app.config['MONGO_DBNAME'] = "tasker_db"
 app.config['MONGO_URI'] = "mongodb://localhost:27017"
 mongo = PyMongo(app)
 
+
+def to_json(data):
+    """Convert Mongo object(s) to JSON"""
+    return json.dumps(data, default=json_util.default)
 
 #region Security
 
@@ -123,7 +128,14 @@ def tasks():
 @app.route('/tasks', methods=['GET'])
 @authorize
 def get_all_task(user):
-    return user.tasks
+    tasks = mongo.db.tasks.find({'user_id': str(user['_id'])})
+    json_result = []
+    for task in tasks:
+      json_result.append(task)
+
+    result = to_json(json_result)
+
+    return Response(result, status="200", content_type='application/json')
 
 
 @app.route('/task', methods=['POST'])
@@ -134,9 +146,30 @@ def add_task(user):
     mongo.db.tasks.insert({'data': req['data'],
                            'date': req['date'],
                            'guid': req['guid'],
-                           'user_id': user._id})
+                           'user_id':  str(user['_id'])})
 
     return Response(status="200")
+
+
+@app.route('/task', methods=['PUT'])
+@authorize
+def update_task(user):
+    req = request.get_json(silent=True)
+
+    mongo.db.tasks.update({'guid': req['guid']},
+                          {"$set" : {'data': req['data'],
+                                     'date': req['date']}})
+
+    return Response(status="200")
+
+@app.route('/task', methods=['GET'])
+@authorize
+def get_task(user):
+    req = request.get_json(silent=True)
+
+    task = mongo.db.tasks.find_one({'guid' : req['guid']})
+
+    return Response(to_json(task), status="200", content_type='application/json')
 
 #endregion
 

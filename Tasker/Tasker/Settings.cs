@@ -17,7 +17,7 @@ namespace Tasker
         #region Setting Constants
 
         private const string BaseUrlKey = "base_url_key";
-        private static readonly string BaseUrlKeyDefault = @"http://127.0.0.1:5000";
+        private static readonly string BaseUrlKeyDefault = @"http://10.0.3.2:5000";
 
         private const string CurrentTokenKey = "current_token";
         private static readonly string CurrentTokenDefault = string.Empty;

@@ -24,7 +24,8 @@ namespace Tasker
         {
             InitializeComponent();
 
-            await NavigationService.NavigateAsync("NavigationPage/EditTask?id=2&edit=true");
+            //await NavigationService.NavigateAsync("NavigationPage/EditTask?id=2&edit=true");
+            await NavigationService.NavigateAsync("NavigationPage/Login");
         }
 
         protected override void RegisterTypes()

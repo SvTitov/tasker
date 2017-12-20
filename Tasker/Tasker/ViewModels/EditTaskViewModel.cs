@@ -15,7 +15,7 @@ namespace Tasker.ViewModels
         {
             this.navigationService = navigationService;
 
-            RefreshCommand = new DelegateCommand(AddTask)
+            RefreshCommand = new DelegateCommand(AddTask);
         }
 
         private void AddTask()
