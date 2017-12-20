@@ -3,47 +3,69 @@
     x:Class="Tasker.Views.MainPage"
     xmlns="http://xamarin.com/schemas/2014/forms"
     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-    Title="{Binding Title}"
     xmlns:prism="clr-namespace:Prism.Mvvm;assembly=Prism.Forms"
+    Title="{Binding Title}"
     prism:ViewModelLocator.AutowireViewModel="True">
-    
-    <Grid
-        HorizontalOptions="FillAndExpand"
-        VerticalOptions="FillAndExpand">
-        <StackLayout
-            HorizontalOptions="FillAndExpand"
-            VerticalOptions="FillAndExpand">
 
-            <ListView 
-                IsPullToRefreshEnabled="true"
-                ItemsSource="{Binding Tasks}">
+    <ContentPage.ToolbarItems>
+        <ToolbarItem
+            Name="Refresh"
+            Command="{Binding LogoutCommand}"
+            Order="Primary"
+            Priority="0"
+            Text="Выйти" />
+    </ContentPage.ToolbarItems>
+
+    <Grid HorizontalOptions="FillAndExpand" VerticalOptions="FillAndExpand">
+        <StackLayout HorizontalOptions="FillAndExpand" VerticalOptions="FillAndExpand">
+
+            <ListView
+                ItemsSource="{Binding Tasks}"
+                RefreshCommand="{Binding RefreshCommand}"
+                SelectedItem="{Binding SelectedItem, Mode=TwoWay}">
                 <ListView.ItemTemplate>
                     <DataTemplate>
                         <ViewCell>
-                            <StackLayout Orientation="Horizontal" HorizontalOptions="Fill" BackgroundColor="Olive">
+                            <ViewCell.ContextActions>
+                                <MenuItem
+                                    Clicked="OnDelete"
+                                    CommandParameter="{Binding .}"
+                                    IsDestructive="True"
+                                    Text="Удалить" />
+                            </ViewCell.ContextActions>
+                            <StackLayout
+                                BackgroundColor="#7E57C2"
+                                HorizontalOptions="Fill"
+                                Orientation="Horizontal">
                                 <StackLayout Orientation="Vertical">
-                                    <Label Text = "{Binding Data}" FontSize="24" AbsoluteLayout.LayoutBounds="0.25, 0.25, 400, 40"/>
-                                    <Label Text = "{Binding Date}" AbsoluteLayout.LayoutBounds="50, 35, 200, 25"/>
+                                    <Label FontSize="24" Text="{Binding Data}" />
+                                    <Label Text="{Binding Date, StringFormat='{0:HH:mm:ss}'}" />
                                 </StackLayout>
-                                <Image Source="{Binding Image}" HorizontalOptions="End" AbsoluteLayout.LayoutBounds="250.25, 0.25, 50, 50 "/>
                             </StackLayout>
                         </ViewCell>
                     </DataTemplate>
                 </ListView.ItemTemplate>
             </ListView>
-            
+
         </StackLayout>
 
-        <Button 
+        <Frame
             Margin="20"
-            VerticalOptions="End"
+            BackgroundColor="Pink"
+            HeightRequest="20"
             HorizontalOptions="End"
-            BackgroundColor="#2e61b2"
-            WidthRequest="50"
-            TextColor="White"
-            HeightRequest="50"
-            FontSize="30"
-            Command="{Binding AddCommand}"
-            Text="+"/>
+            VerticalOptions="End"
+            WidthRequest="20">
+            <Frame.GestureRecognizers>
+                <TapGestureRecognizer Command="{Binding AddCommand}" />
+            </Frame.GestureRecognizers>
+            <Label
+                FontSize="20"
+                HorizontalOptions="Center"
+                HorizontalTextAlignment="Center"
+                Text="+"
+                VerticalOptions="Center"
+                VerticalTextAlignment="Center" />
+        </Frame>
     </Grid>
 </ContentPage>

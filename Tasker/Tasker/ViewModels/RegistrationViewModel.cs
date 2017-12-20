@@ -51,8 +51,18 @@ namespace Tasker.ViewModels
             }
             else
             {
-                var result = repostiroty.Confirm(Phone, Code);
-                await _navigationService.GoBackAsync();
+                Confirm();
+            }
+        }
+
+	    private async void Confirm()
+	    {
+	        var repostiroty = _container.Resolve<IRegistrationRepository>();
+
+            var result = await repostiroty.Confirm(Phone, Code);
+	        if (result.IsSuccessStatusCode)
+	        {
+	            await _navigationService.GoBackAsync();
             }
         }
 

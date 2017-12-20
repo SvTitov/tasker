@@ -15,7 +15,7 @@ from bson import json_util
 
 
 app = Flask(__name__)
-app.config['SECRET_KEY'] = "super secret word"
+app.config['SECRET_KEY'] = "secret"
 app.config['MONGO_DBNAME'] = "tasker_db"
 app.config['MONGO_URI'] = "mongodb://localhost:27017"
 mongo = PyMongo(app)
@@ -30,6 +30,7 @@ def to_json(data):
 def generate_auth_token(id, expiration=600):
     ss = str(id)
     s = Serializer(app.config['SECRET_KEY'], expires_in=expiration)
+
     return s.dumps({'id': ss})
 
 
@@ -39,23 +40,29 @@ def authorize(f):
         if not 'Authorization' in request.headers:
             return Response(status="401")
 
-        data = request.headers['Authorization'].encode('utf-8', 'ignore')
+        data = request.headers['Authorization']
         user = verify_auth_token(data)
-        return f(user, args, kwargs)
+
+        if not user:
+            return Response(status="404")
+
+        return f(user)
 
     return wrapper
 
 
 def verify_auth_token(token):
     s = Serializer(app.config['SECRET_KEY'])
+    t = token.replace('\'', '')[1:]
     try:
-        data = s.loads(token)
+        data = s.loads(t)
     except SignatureExpired:
         return None  # valid token, but expired
     except BadSignature:
         return None  # invalid token
 
-    user = mongo.db.find_one({'_id': ObjectId(data)})
+    dd = data['id']
+    user = mongo.db.users.find_one({'_id': ObjectId(dd)})
     return user
 
 #endregion
@@ -85,6 +92,10 @@ def register():
     if not tmp_users.find_one_and_update({'phone': req['phone']}, {'$set': {'code': rnd}}, upsert=True):
         tmp_users.insert({'phone': req['phone'], 'code': rnd})
 
+
+    #remove this
+    return Response(status="200")
+
     r = requests.post('https://sms.ru/sms/send?api_id=840B3593-66E9-5AB4-4965-0B9589019F3A&to=' + str(
         req['phone']) + '&msg=Код%20для%20регистрации:%20' + str(rnd) + '&json=1')
 
@@ -102,7 +113,7 @@ def finish_registration():
         return Response("Указанный номер уже зарегистирован", status="409", content_type="utf-8")
 
     tmp_users = mongo.db.template_users
-    if tmp_users.find_one({'phone': req['phone'], 'code': req['code']}):
+    if tmp_users.find_one({'phone': req['phone'], 'code': int(req['code'])}):
         to_insert = {'phone': req['phone'], 'profile': {'first_name': '', 'last_name': '', 'birth_date': None}}
         mongo.db.users.insert_one(
             {'phone': req['phone'], 'profile': {'first_name': '', 'last_name': '', 'birth_date': None}})
@@ -119,6 +130,10 @@ def tasks():
     if user:
         token = generate_auth_token(user['_id'])
         return Response(json.dumps({'token': str(token)}), status="200", content_type='application/json')
+    else:
+        return Response(status="404")
+    
+    
 
 
 # endregion
@@ -166,10 +181,20 @@ def update_task(user):
 @authorize
 def get_task(user):
     req = request.get_json(silent=True)
+    id = request.args.get('id')
 
-    task = mongo.db.tasks.find_one({'guid' : req['guid']})
+    task = mongo.db.tasks.find_one({'guid' : id})
 
     return Response(to_json(task), status="200", content_type='application/json')
+
+
+@app.route('/task', methods=['DELETE'])
+@authorize
+def delete_task(user):
+    req = request.get_json(silent=True)
+    mongo.db.tasks.delete_one({'guid' : req['guid']})
+
+    return Response(status="200")
 
 #endregion
 

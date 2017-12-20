@@ -11,5 +11,13 @@ namespace Tasker.Repositories
     public interface IRestRepository
     {
         Task<List<Models.System.Task>> GetTasks();
+
+        Task<bool> UpdateTask(string guid, string data, DateTime date);
+
+        Task<bool> DeleteTask(string guid);
+
+        Task<bool> AddTask(string data, DateTime date, string guid);
+
+        Task<TaskInput> GetTask(string guid);
     }
 }

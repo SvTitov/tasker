@@ -25,10 +25,9 @@ namespace Tasker.Repositories
 
         public async Task<System.Net.Http.HttpResponseMessage> Confirm (string phone, string code)
         {
-            System.Net.Http.HttpResponseMessage result = await Path.Combine(Settings.BaseUrl, "/register/confirm")
+            System.Net.Http.HttpResponseMessage result = await (Settings.BaseUrl + "/register/confirm")
                             .AllowAnyHttpStatus()
                             .PostJsonAsync(new ConfirmOutput { Phone = phone , Code = code});
-
 
             return result;
         }

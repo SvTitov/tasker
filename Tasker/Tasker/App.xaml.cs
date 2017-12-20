@@ -25,7 +25,7 @@ namespace Tasker
             InitializeComponent();
 
             //await NavigationService.NavigateAsync("NavigationPage/EditTask?id=2&edit=true");
-            await NavigationService.NavigateAsync("NavigationPage/Login");
+            await NavigationService.NavigateAsync(string.Format("NavigationPage/{0}", string.IsNullOrWhiteSpace(Settings.CurrentToken) ? "Login" : "MainPage"));
         }
 
         protected override void RegisterTypes()

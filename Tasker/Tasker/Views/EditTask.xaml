@@ -3,24 +3,30 @@
     x:Class="Tasker.Views.EditTask"
     xmlns="http://xamarin.com/schemas/2014/forms"
     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-    Title="{Binding Title}"
     xmlns:prism="clr-namespace:Prism.Mvvm;assembly=Prism.Forms"
+    Title="{Binding Title}"
     prism:ViewModelLocator.AutowireViewModel="True">
 
     <ContentPage.ToolbarItems>
-        <ToolbarItem Command="{Binding RefreshCommand}" Name="Refresh" Order="Primary" Text="Обновить" Priority="0" />
+        <ToolbarItem
+            Name="Refresh"
+            Command="{Binding RefreshCommand}"
+            Order="Primary"
+            Priority="0"
+            Text="{Binding ActionText}" />
     </ContentPage.ToolbarItems>
-    
+
     <StackLayout
         Padding="20"
         HorizontalOptions="FillAndExpand"
         Orientation="Vertical"
         VerticalOptions="FillAndExpand">
-        <Label Text="Описание"/>
-        <Editor BackgroundColor="Aqua"
+        <Label Text="Описание" />
+        <Editor
+            BackgroundColor="#7E57C2"
             HeightRequest="200"
-            Text="{Binding Data}"/>
-        <Label Text="Когда"/>
-        <DatePicker Date="{Binding Date}"/>
+            Text="{Binding Data}" />
+        <Label Text="Когда" />
+        <DatePicker Date="{Binding Date}" />
     </StackLayout>
 </ContentPage>
