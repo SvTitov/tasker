@@ -12,7 +12,7 @@ get==0.0.21
 httptools==0.0.9
 idna==2.6
 itsdangerous==0.24
-Jinja2==2.9.6
+Jinja2==2.11.3
 MarkupSafe==1.0
 mongoengine==0.15.0
 multidict==3.3.2
